@@ -1,0 +1,118 @@
+# KMRTM40045-SPI 4.0" TFT Display (480x320 v2.1)
+
+## Summary
+
+Successfully initialized and drove the KMRTM40045-SPI 4.0" TFT display using an ESP32 and TFT_eSPI.
+
+Display responds correctly with full-screen color rendering and text output.
+
+---
+
+## ⚠️ Critical Discovery
+
+The display is labeled:
+
+**KMRTM40045-SPI (ST7796 expected)**
+
+However:
+
+❌ ST7796 driver does NOT work
+✅ ILI9488 driver works perfectly
+
+---
+
+## ✅ Working Driver Configuration
+
+```cpp
+#define ILI9488_DRIVER
+```
+
+---
+
+## 🔌 Working Pin Configuration
+
+```cpp
+#define TFT_MOSI 23
+#define TFT_SCLK 18
+#define TFT_CS    5
+#define TFT_DC    2
+#define TFT_RST   4
+
+#define TFT_BL 15
+#define TFT_BACKLIGHT_ON HIGH
+```
+
+---
+
+## 🔧 Wiring
+
+| Display Pin | ESP32 Pin |
+| ----------- | --------- |
+| VCC         | 3.3V      |
+| GND         | GND       |
+| CS          | GPIO 5    |
+| RESET       | GPIO 4    |
+| D/C         | GPIO 2    |
+| SDI (MOSI)  | GPIO 23   |
+| SCK         | GPIO 18   |
+| LED         | GPIO 15   |
+
+---
+
+## 🧪 Test Results
+
+* TFT_eSPI initialization: ✅ PASS
+* Color fill test: ✅ PASS
+* Serial debug output: ✅ PASS
+* Display renders correctly: ✅ PASS
+
+---
+
+## ❌ Non-Working Configuration
+
+```cpp
+#define ST7796_DRIVER
+```
+
+Result:
+
+* White screen
+* Flickering only
+* No visible graphics
+
+---
+
+## 🧠 Observations
+
+* Display likely uses an ILI9488-compatible controller despite ST7796 labeling
+* Mislabeling or controller substitution is common in generic TFT modules
+* Always validate hardware through testing, not documentation alone
+
+---
+
+## 📦 Model Information
+
+Printed on back:
+**KMRTM40045-SPI 4.0" TFT SPI 480x320 v2.1**
+
+---
+
+## 🚀 Next Steps
+
+* Verify text rendering and layout
+* Adjust screen rotation/orientation
+* Implement QR code rendering
+* Integrate LNbits / Bitcoin Switch UI
+* Test touch controller (XPT2046)
+
+---
+
+## ⚡ STACKSWORTH
+
+This display will be used as part of the STACKSWORTH ecosystem:
+
+* Bitcoin vending systems
+* Interactive LNbits interfaces
+* Future Spark-style touchscreen devices
+
+Where data comes to life.
