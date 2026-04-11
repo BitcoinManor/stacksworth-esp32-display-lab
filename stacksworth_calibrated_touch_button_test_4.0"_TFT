@@ -11,11 +11,11 @@ TFT_eSPI tft = TFT_eSPI();
 const int SCREEN_W = 320;
 const int SCREEN_H = 480;
 
-// Calibrated from your latest corner taps
-const int RAW_X_MIN = 619;   // right side
-const int RAW_X_MAX = 3419;  // left side
-const int RAW_Y_MIN = 434;   // bottom
-const int RAW_Y_MAX = 3512;  // top
+// Your current rough calibration
+const int RAW_X_MIN = 500;
+const int RAW_X_MAX = 3500;
+const int RAW_Y_MIN = 400;
+const int RAW_Y_MAX = 3600;
 
 // Button area
 const int BTN_X = 25;
@@ -23,7 +23,9 @@ const int BTN_Y = 250;
 const int BTN_W = 270;
 const int BTN_H = 90;
 
-bool wasTouched = false;
+bool buttonHighlighted = false;
+unsigned long lastTouchTime = 0;
+const unsigned long HIGHLIGHT_HOLD_MS = 250;
 
 int mapTouchX(int rawX) {
   rawX = constrain(rawX, RAW_X_MIN, RAW_X_MAX);
@@ -64,10 +66,10 @@ void setup() {
   Serial.begin(115200);
 
   ts.begin();
-  ts.setRotation(0);
+  ts.setRotation(2);
 
   tft.init();
-  tft.setRotation(0);
+  tft.setRotation(2);
   tft.invertDisplay(false);
 
   drawScreen(false);
@@ -79,29 +81,42 @@ void loop() {
   if (ts.touched()) {
     TS_Point p = ts.getPoint();
 
-    int sx = mapTouchX(p.x);
-    int sy = mapTouchY(p.y);
+    // Ignore only truly useless noise
+    if (p.z > 150) {
+      int sx = mapTouchX(p.x);
+      int sy = mapTouchY(p.y);
 
-    bool inButton =
-      (sx >= BTN_X && sx <= BTN_X + BTN_W &&
-       sy >= BTN_Y && sy <= BTN_Y + BTN_H);
+      bool inButton =
+        (sx >= BTN_X && sx <= BTN_X + BTN_W &&
+         sy >= BTN_Y && sy <= BTN_Y + BTN_H);
 
-    Serial.print("RAW X: ");
-    Serial.print(p.x);
-    Serial.print(" | RAW Y: ");
-    Serial.print(p.y);
-    Serial.print(" || SCREEN X: ");
-    Serial.print(sx);
-    Serial.print(" | SCREEN Y: ");
-    Serial.print(sy);
-    Serial.print(" || BUTTON: ");
-    Serial.println(inButton ? "YES" : "NO");
+      Serial.print("RAW X: ");
+      Serial.print(p.x);
+      Serial.print(" | RAW Y: ");
+      Serial.print(p.y);
+      Serial.print(" | Z: ");
+      Serial.print(p.z);
+      Serial.print(" || SCREEN X: ");
+      Serial.print(sx);
+      Serial.print(" | SCREEN Y: ");
+      Serial.print(sy);
+      Serial.print(" || BUTTON: ");
+      Serial.println(inButton ? "YES" : "NO");
 
-    drawScreen(inButton);
-    wasTouched = true;
-    delay(150);
-  } else if (wasTouched) {
-    drawScreen(false);
-    wasTouched = false;
+      if (inButton) {
+        lastTouchTime = millis();
+        if (!buttonHighlighted) {
+          buttonHighlighted = true;
+          drawScreen(true);
+        }
+      }
+    }
   }
+
+  if (buttonHighlighted && millis() - lastTouchTime > HIGHLIGHT_HOLD_MS) {
+    buttonHighlighted = false;
+    drawScreen(false);
+  }
+
+  delay(120);
 }
