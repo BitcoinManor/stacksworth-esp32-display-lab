@@ -1,0 +1,107 @@
+#include <SPI.h>
+#include <XPT2046_Touchscreen.h>
+#include <TFT_eSPI.h>
+
+#define T_CS 21
+#define T_IRQ 22
+
+XPT2046_Touchscreen ts(T_CS, T_IRQ);
+TFT_eSPI tft = TFT_eSPI();
+
+const int SCREEN_W = 320;
+const int SCREEN_H = 480;
+
+// Calibrated from your latest corner taps
+const int RAW_X_MIN = 619;   // right side
+const int RAW_X_MAX = 3419;  // left side
+const int RAW_Y_MIN = 434;   // bottom
+const int RAW_Y_MAX = 3512;  // top
+
+// Button area
+const int BTN_X = 25;
+const int BTN_Y = 250;
+const int BTN_W = 270;
+const int BTN_H = 90;
+
+bool wasTouched = false;
+
+int mapTouchX(int rawX) {
+  rawX = constrain(rawX, RAW_X_MIN, RAW_X_MAX);
+  return map(rawX, RAW_X_MAX, RAW_X_MIN, 0, SCREEN_W - 1);
+}
+
+int mapTouchY(int rawY) {
+  rawY = constrain(rawY, RAW_Y_MIN, RAW_Y_MAX);
+  return map(rawY, RAW_Y_MAX, RAW_Y_MIN, 0, SCREEN_H - 1);
+}
+
+void drawScreen(bool pressed = false) {
+  tft.fillScreen(TFT_BLACK);
+
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextSize(3);
+  tft.setCursor(95, 120);
+  tft.println("READY");
+
+  uint16_t c1 = pressed ? TFT_GREEN : TFT_ORANGE;
+  uint16_t c2 = pressed ? TFT_WHITE : TFT_CYAN;
+
+  tft.fillRoundRect(BTN_X, BTN_Y, BTN_W, BTN_H, 14, TFT_BLACK);
+  tft.drawRoundRect(BTN_X, BTN_Y, BTN_W, BTN_H, 14, c1);
+  tft.drawRoundRect(BTN_X + 2, BTN_Y + 2, BTN_W - 4, BTN_H - 4, 14, c2);
+
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextSize(3);
+  tft.setCursor(65, BTN_Y + 18);
+  tft.println("TAP HERE");
+
+  tft.setTextSize(2);
+  tft.setCursor(100, BTN_Y + 55);
+  tft.println("TO START");
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  ts.begin();
+  ts.setRotation(0);
+
+  tft.init();
+  tft.setRotation(0);
+  tft.invertDisplay(false);
+
+  drawScreen(false);
+
+  Serial.println("Touch button test ready...");
+}
+
+void loop() {
+  if (ts.touched()) {
+    TS_Point p = ts.getPoint();
+
+    int sx = mapTouchX(p.x);
+    int sy = mapTouchY(p.y);
+
+    bool inButton =
+      (sx >= BTN_X && sx <= BTN_X + BTN_W &&
+       sy >= BTN_Y && sy <= BTN_Y + BTN_H);
+
+    Serial.print("RAW X: ");
+    Serial.print(p.x);
+    Serial.print(" | RAW Y: ");
+    Serial.print(p.y);
+    Serial.print(" || SCREEN X: ");
+    Serial.print(sx);
+    Serial.print(" | SCREEN Y: ");
+    Serial.print(sy);
+    Serial.print(" || BUTTON: ");
+    Serial.println(inButton ? "YES" : "NO");
+
+    drawScreen(inButton);
+    wasTouched = true;
+    delay(150);
+  } else if (wasTouched) {
+    drawScreen(false);
+    wasTouched = false;
+  }
+}
