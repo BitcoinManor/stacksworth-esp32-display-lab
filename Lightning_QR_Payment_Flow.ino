@@ -203,17 +203,22 @@ void showPaymentScreenPlaceholder() {
   tft.fillScreen(SW_BG);
   drawHeader();
 
+  tft.setTextColor(SW_WHITE, SW_BG);
+  tft.setTextSize(2);
+  tft.setCursor(10, 120);
+  tft.println("SCAN TO PAY");
+
+  
   tft.setTextColor(SW_ORANGE, SW_BG);
   tft.setTextSize(2);
-  tft.setCursor(15, 120);
-  tft.println("SCAN TO PAY via LIGHTNING");
-
+  tft.setCursor(150, 120);
+  tft.println("via LIGHTNING");
   
   drawQRCode("lightning:LNURL1DP68GURN8GHJ7ARPWQ68XCT5WVHXY6T5VDHKJMNDV9HX7U3WVDHK6TMZD96XXMMFDEEHW6T5VD5Z7CTSDYHHVVF0D3H82UNVG96RG4ENG499GJNSW9E85KRD8PF9ZJN4F3TN7URFDC7NXV3XV9KK7ATWWS7NZDFS9CCZVER4WFSHG6T0DC7NZDFSXQN8VCTJD9SKYMR984RXZMRNV5NXXMMDD4JKUAPAGESKCUM9YEJXJUMPVFKX2ARFD4JN6VQNFFHER");
 
     //drawQRCode("bitcoinmanor.com");
     
-  tft.setTextColor(SW_WHITE, SW_BG);
+  tft.setTextColor(SW_ORANGE, SW_BG);
   tft.setTextSize(2);
   tft.setCursor(110, 370);
   tft.println("150 SATS");
@@ -298,7 +303,7 @@ void loopTFT(bool wifi, bool ws, bool ping) {
 
       if (currentTFTScreen == TFT_SCREEN_IDLE) {
         showPreparingScreen();
-        delay(2100);
+        delay(5000);
         showPaymentScreenPlaceholder();
       }
     }
@@ -361,10 +366,10 @@ void clearTFT() {
 
 void flashTFT() {
   showPaidScreen();
-  delay(2100);
+  delay(5000);
 
   showVendScreen();
-  delay(2500);
+  delay(21000);
 
   buttonHighlighted = false;
   showIdleScreen(true, true, false);
