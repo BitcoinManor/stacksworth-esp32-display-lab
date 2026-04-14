@@ -83,6 +83,10 @@ void drawHeartbeatDot(bool ping) {
   tft.println("WS HEARTBEAT");
 }
 
+//---------Credit
+
+
+
 // ---------- Footer ----------
 void drawStatusFooter(bool wifi, bool ws) {
   tft.drawFastHLine(20, 410, 280, SW_DARKGREY);
@@ -175,6 +179,20 @@ void showIdleScreen(bool wifi, bool ws, bool ping) {
 
   drawHeartbeatDot(ping);
   drawButtonBox("TAP HERE", "TO START", buttonHighlighted);
+
+  // Attribution (centered, clean)
+  tft.setTextSize(1);
+  tft.setTextColor(SW_GREY, SW_BG);
+
+  // First line
+  tft.setCursor(80, 360);
+  tft.println("Built by Bitcoin Manor");
+
+  // Second line (slightly highlighted)
+  tft.setTextColor(SW_CYAN, SW_BG);
+  tft.setCursor(95, 380);
+  tft.println("Powered by LNbits");
+  
   drawStatusFooter(wifi, ws);
 }
 
