@@ -56,36 +56,36 @@ const int CANCEL_H = 40;
 // ---------- Header ----------
 void drawHeader() {
   // Logo box - white background with black border (like STACKSWORTH logo)
-  tft.fillRoundRect(40, 25, 240, 50, 8, SW_WHITE);
-  tft.drawRoundRect(40, 25, 240, 50, 8, SW_BLACK);
-  tft.drawRoundRect(41, 26, 238, 48, 8, SW_BLACK);
+  tft.fillRoundRect(20, 20, 280, 65, 8, SW_WHITE);
+  tft.drawRoundRect(20, 20, 280, 65, 8, SW_BLACK);
+  tft.drawRoundRect(21, 21, 280, 63, 8, SW_BLACK);
 
   tft.setTextColor(SW_BLACK, SW_WHITE);
-  tft.setTextSize(3);
-  tft.setCursor(52, 40);
+  tft.setTextSize(4);
+  tft.setCursor(30, 40);
   tft.println("STACKSWORTH");
 
   // Below logo
   tft.setTextColor(SW_ORANGE, SW_BG);
-  tft.setTextSize(2);
-  tft.setCursor(72, 85);
+  tft.setTextSize(3);
+  tft.setCursor(35, 95);
   tft.println("BITCOIN SWITCH");
 
-  tft.setTextColor(SW_GREY, SW_BG);
-  tft.setTextSize(1);
-  tft.setCursor(90, 105);
-  tft.println("powered by LNbits");
+  tft.setTextColor(SW_PURPLE, SW_BG);
+  tft.setTextSize(2);
+  tft.setCursor(65, 125);
+  tft.println("Powered by LNbits");
 }
 
 // ---------- Heartbeat ----------
 void drawHeartbeatDot(bool ping) {
   uint16_t color = ping ? SW_CYAN : SW_ORANGE;
-  tft.fillCircle(160, 180, 10, color);
-  tft.drawCircle(160, 180, 11, SW_DARKGREY);
+  tft.fillCircle(220, 195, 10, color);
+  tft.drawCircle(220, 195, 11, SW_DARKGREY);
 
-  tft.setTextSize(1);
+  tft.setTextSize(2);
   tft.setTextColor(SW_GREY, SW_BG);
-  tft.setCursor(118, 200);
+  tft.setCursor(160, 215);
   tft.println("WS HEARTBEAT");
 }
 
@@ -124,11 +124,11 @@ void drawButtonBox(const char* line1, const char* line2, bool highlight) {
   tft.setTextColor(textCol, fillColor);
 
   tft.setTextSize(3);
-  tft.setCursor(65, BTN_Y + 18);
+  tft.setCursor(90, BTN_Y + 18);
   tft.println(line1);
 
   tft.setTextSize(2);
-  tft.setCursor(100, BTN_Y + 55);
+  tft.setCursor(115, BTN_Y + 55);
   tft.println(line2);
 }
 
@@ -143,7 +143,7 @@ void drawQRCode(const char *data) {
   int offsetX = (tft.width() - qrSize) / 2;
   int offsetY = 160;
 
-  // 🔥 ADD THIS HERE (quiet zone)
+  
   tft.fillRect(offsetX - 12, offsetY - 12, qrSize + 24, qrSize + 24, TFT_WHITE);
   
   for (uint8_t y = 0; y < qrcode.size; y++) {
@@ -201,25 +201,26 @@ void showIdleScreen(bool wifi, bool ws, bool ping) {
   tft.fillScreen(SW_BG);
   drawHeader();
 
+  // READY and heartbeat side by side
   tft.setTextColor(SW_BLACK, SW_BG);
   tft.setTextSize(3);
-  tft.setCursor(110, 135);
+  tft.setCursor(65, 185);
   tft.println("READY");
 
   drawHeartbeatDot(ping);
   drawButtonBox("TAP HERE", "TO START", buttonHighlighted);
 
   // Attribution (centered, clean)
-  tft.setTextSize(1);
+  tft.setTextSize(2);
   tft.setTextColor(SW_GREY, SW_BG);
 
   // First line
-  tft.setCursor(80, 360);
+  tft.setCursor(50, 360);
   tft.println("Built by Bitcoin Manor");
 
   // Second line (slightly highlighted)
-  tft.setTextColor(SW_CYAN, SW_BG);
-  tft.setCursor(95, 380);
+  tft.setTextColor(SW_PURPLE, SW_BG);
+  tft.setCursor(75, 380);
   tft.println("Powered by LNbits");
   
   drawStatusFooter(wifi, ws);
